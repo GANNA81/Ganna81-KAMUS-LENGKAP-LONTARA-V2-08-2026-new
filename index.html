@@ -1,1 +1,300 @@
-o
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamus & Edukasi Sejarah Lontara Makassar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lontara&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { text-align: center; background: #fdfdfd; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 680px; margin: auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        .lontara-font, .char-lontara, .lontara-big, .word-lontara, h1 span {
+            font-family: 'Noto Sans Lontara', 'Segoe UI Historic', 'Arial Unicode MS', sans-serif;
+        }
+
+        h1 { color: #b71c1c; margin-bottom: 5px; font-size: 24px; }
+        .subtitle { color: #777; font-size: 14px; margin-bottom: 20px; }
+
+        .tab-menu { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #f0f0f0; color: #555; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 13px; }
+        .tab-btn.active { background: #b71c1c; color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .search-box { position: relative; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px 20px; font-size: 16px; border: 2px solid #ddd; border-radius: 30px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #b71c1c; }
+
+        .result-card { background: #fff5f5; border: 1px solid #ffe0e0; padding: 20px; border-radius: 12px; margin-bottom: 25px; }
+        .lontara-big { font-size: 48px; color: #b71c1c; margin: 10px 0; font-weight: bold; }
+        .latin-big { font-size: 20px; font-weight: bold; color: #222; }
+        .arti-big { font-size: 16px; color: #555; margin-top: 5px; }
+
+        .info-box { background: #fff8e1; border-left: 4px solid #ffa000; padding: 14px; text-align: left; border-radius: 8px; font-size: 13px; color: #5d4037; margin-bottom: 20px; line-height: 1.6; }
+        .sejarah-card { background: #fafafa; border: 1px solid #eee; padding: 16px; border-radius: 10px; text-align: left; margin-bottom: 15px; line-height: 1.6; }
+        .sejarah-card h3 { color: #b71c1c; margin-top: 0; font-size: 16px; border-bottom: 2px solid #ffe0e0; padding-bottom: 6px; }
+
+        .grid-huruf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .card-huruf { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 12px 5px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .card-huruf:hover { border-color: #b71c1c; transform: translateY(-2px); }
+        .char-lontara { font-size: 30px; color: #b71c1c; font-weight: bold; }
+        .char-latin { font-size: 13px; font-weight: bold; color: #333; margin-top: 4px; }
+        
+        .svg-toa { width: 32px; height: 32px; fill: #b71c1c; display: block; margin: auto; }
+
+        .dictionary-list { text-align: left; margin-top: 20px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
+        .dictionary-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .word-lontara { font-size: 22px; color: #b71c1c; }
+        .word-latin { font-weight: bold; }
+        .word-arti { color: #666; font-size: 13px; }
+
+        .btn-audio { background: #b71c1c; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><span>ᨀᨀᨔ</span> - Kamus & Sejarah Lontara</h1>
+    <div class="subtitle">Media Edukasi Aksara & Bahasa Makassar</div>
+
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="bukaTab('kamusTab', this)">📚 Kamus</button>
+        <button class="tab-btn" onclick="bukaTab('dasarTab', this)">🔤 Huruf Modern</button>
+        <button class="tab-btn" onclick="bukaTab('toaTab', this)">📜 Jangang-Jangang</button>
+        <button class="tab-btn" onclick="bukaTab('sejarahTab', this)">📖 Riwayat & Sejarah</button>
+    </div>
+
+    <!-- TAB 1: KAMUS -->
+    <div id="kamusTab" class="tab-content active">
+        <div class="search-box">
+            <input type="text" id="searchInput" oninput="cariKata()" placeholder="Cari kata... (contoh: tabe, inakke, je'ne', allo)">
+        </div>
+
+        <div class="result-card" id="resultCard" style="display:none;">
+            <div class="latin-big" id="resLatin">-</div>
+            <div class="lontara-big" id="resLontara">-</div>
+            <div class="arti-big" id="resArti">-</div>
+            <button class="btn-audio" onclick="putarSuara(kataAktif)">🔊 Suara Pengucapan</button>
+        </div>
+
+        <h3>Daftar Kosakata Lengkap A-Z</h3>
+        <div class="dictionary-list" id="dictList"></div>
+    </div>
+
+    <!-- TAB 2: DASAR HURUF MODERN -->
+    <div id="dasarTab" class="tab-content">
+        <div class="info-box">
+            23 Huruf dasar <b>Lontara Modern (Sulapa Eppa)</b>. Klik kartu huruf untuk mendengar bunyi ucapnya.
+        </div>
+        <div class="grid-huruf" id="gridDasar"></div>
+    </div>
+
+    <!-- TAB 3: LONTARA TOA (JANGANG-JANGANG) -->
+    <div id="toaTab" class="tab-content">
+        <div class="info-box">
+            <b>Lontara Toa (Ukiri' Jangang-Jangang)</b>: Aksara kuno Makassar ciptaan I Daeng Pamatte (abad ke-16).
+        </div>
+        <div class="grid-huruf" id="gridToa"></div>
+    </div>
+
+    <!-- TAB 4: SEJARAH -->
+    <div id="sejarahTab" class="tab-content">
+        <div class="sejarah-card">
+            <h3>🦅 1. Pencipta Aksara: I Daeng Pamatte (Abad ke-16)</h3>
+            <p>Aksara Lontara Makassar diciptakan oleh <b>I Daeng Pamatte</b>, pejabat Kerajaan Gowa yang menjabat sebagai <i>Sabannara</i> merangkap <i>Tumailalang</i> atas perintah <b>Raja Gowa ke-9, Karaeng Tumapa'risi' Kallonna</b>.</p>
+        </div>
+
+        <div class="sejarah-card">
+            <h3>📜 2. Lontara Toa / Ukiri' Jangang-Jangang</h3>
+            <p>Bentuk pertama Lontara Makassar diciptakan dari pengamatan gerakan burung (<i>jangang-jangang</i>).</p>
+        </div>
+
+        <div class="sejarah-card">
+            <h3>💎 3. Filosofi Aksara Sulapa Eppa</h3>
+            <p>Empat sudut belah ketupat melambangkan empat elemen pembentuk alam raya: Api, Air, Angin, dan Tanah.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const hurufDasar = [
+        { latin: "Ka", lontara: "ᨀ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,80 Q50,10 80,80 Q50,40 20,80 Z"/></svg>` },
+        { latin: "Ga", lontara: "ᨁ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,20 Q80,20 50,80 Q20,20 20,20 Z"/></svg>` },
+        { latin: "Nga", lontara: "ᨂ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,50 Q50,10 80,50 Q50,90 20,50 Z"/></svg>` },
+        { latin: "Ngka", lontara: "ᨃ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" stroke="#b71c1c" stroke-width="12" fill="none"/><path d="M50,15 L50,85"/></svg>` },
+        { latin: "Pa", lontara: "ᨄ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M15,30 Q50,85 85,30" stroke="#b71c1c" stroke-width="14" fill="none"/></svg>` },
+        { latin: "Ba", lontara: "ᨅ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M15,70 Q50,15 85,70" stroke="#b71c1c" stroke-width="14" fill="none"/></svg>` },
+        { latin: "Ma", lontara: "ᨆ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,20 L80,20 L50,80 Z"/></svg>` },
+        { latin: "Mpa", lontara: "ᨇ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,80 L80,80 L50,20 Z"/></svg>` },
+        { latin: "Ta", lontara: "ᨈ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,20 L80,80 M80,20 L20,80" stroke="#b71c1c" stroke-width="14"/></svg>` },
+        { latin: "Da", lontara: "ᨉ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,50 L80,50 M50,20 L50,80" stroke="#b71c1c" stroke-width="14"/></svg>` },
+        { latin: "Na", lontara: "ᨊ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="#b71c1c"/></svg>` },
+        { latin: "Nra", lontara: "ᨋ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="#b71c1c"/></svg>` },
+        { latin: "Ca", lontara: "ᨌ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,20 Q80,50 20,80" stroke="#b71c1c" stroke-width="14" fill="none"/></svg>` },
+        { latin: "Ja", lontara: "ᨍ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M80,20 Q20,50 80,80" stroke="#b71c1c" stroke-width="14" fill="none"/></svg>` },
+        { latin: "Nya", lontara: "ᨎ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,30 C50,90 50,10 80,70" stroke="#b71c1c" stroke-width="14" fill="none"/></svg>` },
+        { latin: "Nca", lontara: "ᨏ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M80,30 C50,90 50,10 20,70" stroke="#b71c1c" stroke-width="14" fill="none"/></svg>` },
+        { latin: "Ya", lontara: "ᨐ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,20 L50,60 L80,20 M50,60 L50,90" stroke="#b71c1c" stroke-width="12" fill="none"/></svg>` },
+        { latin: "Ra", lontara: "ᨑ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,80 L50,40 L80,80 M50,40 L50,10" stroke="#b71c1c" stroke-width="12" fill="none"/></svg>` },
+        { latin: "La", lontara: "ᨒ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,50 L80,20 L80,80 Z"/></svg>` },
+        { latin: "Va/Wa", lontara: "ᨓ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M80,50 L20,20 L20,80 Z"/></svg>` },
+        { latin: "Sa", lontara: "ᨔ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,20 Q50,80 80,20 Q50,50 20,20 Z"/></svg>` },
+        { latin: "A", lontara: "ᨕ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M20,80 Q50,20 80,80 Q50,50 20,80 Z"/></svg>` },
+        { latin: "Ha", lontara: "ᨖ", svg: `<svg class="svg-toa" viewBox="0 0 100 100"><path d="M30,20 L70,20 L70,80 L30,80 Z" fill="#b71c1c"/></svg>` }
+    ];
+
+    const kamusKata = [
+        { latin: "A'bangngi", lontara: "ᨕᨅᨂᨗ", arti: "Menginap / Bermalam" },
+        { latin: "A'barrasa'", lontara: "ᨕᨅᨑᨔ", arti: "Menyapu / Membersihkan" },
+        { latin: "Accalla", lontara: "ᨕᨌᨒ", arti: "Mencela" },
+        { latin: "Agang", lontara: "ᨕᨁ", arti: "Teman / Sahabat" },
+        { latin: "Aka'", lontara: "ᨕᨀ", arti: "Akar" },
+        { latin: "Akkelong", lontara: "ᨕᨀᨙᨒᨚ", arti: "Menyanyi" },
+        { latin: "Alle", lontara: "ᨕᨒᨙ", arti: "Ambil" },
+        { latin: "Amma'", lontara: "ᨕᨆ", arti: "Ibu / Mama" },
+        { latin: "Ammari", lontara: "ᨕᨆᨑᨗ", arti: "Berhenti / Istirahat" },
+        { latin: "Ammotere'", lontara: "ᨕᨆᨚᨈᨙᨑᨙ", arti: "Pulang / Kembali" },
+        { latin: "Ana'", lontara: "ᨕᨊ", arti: "Anak" },
+        { latin: "Anganre", lontara: "ᨕᨂᨊᨛᨑᨙ", arti: "Makan" },
+        { latin: "Angnginung", lontara: "ᨕᨂᨗᨊᨘ", arti: "Minum" },
+        { latin: "Anne", lontara: "ᨕᨊᨙ", arti: "Ini" },
+        { latin: "Anrong", lontara: "ᨕᨑᨚ", arti: "Ibu / Induk" },
+        { latin: "Antekamma", lontara: "ᨕᨊᨛᨈᨙᨀᨆ", arti: "Bagaimana" },
+        { latin: "Baine", lontara: "ᨅᨕᨗᨊᨙ", arti: "Perempuan / Istri" },
+        { latin: "Baji'", lontara: "ᨅᨍᨗ", arti: "Baik / Bagus" },
+        { latin: "Balla'", lontara: "ᨅᨒ", arti: "Rumah" },
+        { latin: "Balle-balle", lontara: "ᨅᨒᨙᨅᨒᨙ", arti: "Bohong / Dusta" },
+        { latin: "Ballisi'", lontara: "ᨅᨒᨗᨔᨗ", arti: "Jengkel / Marah" },
+        { latin: "Balu'", lontara: "ᨅᨒᨘ", arti: "Jual" },
+        { latin: "Bambang", lontara: "ᨅᨆ", arti: "Panas" },
+        { latin: "Bangkeng", lontara: "ᨅᨀᨙ", arti: "Kaki" },
+        { latin: "Barani", lontara: "ᨅᨑᨊᨗ", arti: "Berani" },
+        { latin: "Bassi", lontara: "ᨅᨔᨗ", arti: "Besi" },
+        { latin: "Battala'", lontara: "ᨅᨈᨒ", arti: "Berat / Gemuk" },
+        { latin: "Battang", lontara: "ᨅᨈ", arti: "Perut" },
+        { latin: "Battu", lontara: "ᨅᨈᨘ", arti: "Datang / Tiba" },
+        { latin: "Bayao", lontara: "ᨅᨐᨚ", arti: "Telur" },
+        { latin: "Bella", lontara: "ᨅᨙᨒ", arti: "Jauh" },
+        { latin: "Bembe", lontara: "ᨅᨙᨅᨙ", arti: "Kambing" },
+        { latin: "Binanga", lontara: "ᨅᨗᨊᨁ", arti: "Sungai" },
+        { latin: "Bintoeng", lontara: "ᨅᨗᨈᨚᨕᨙ", arti: "Bintang" },
+        { latin: "Bissa", lontara: "ᨅᨗᨔ", arti: "Cuci" },
+        { latin: "Bobbo'", lontara: "ᨅᨚᨅᨚ", arti: "Buku" },
+        { latin: "Bodo", lontara: "ᨅᨚᨉᨚ", arti: "Pendek" },
+        { latin: "Boko", lontara: "ᨅᨚᨀᨚ", arti: "Belakang" },
+        { latin: "Boli'", lontara: "ᨅᨚᨒᨗ", arti: "Simpan / Taruh" },
+        { latin: "Bosi", lontara: "ᨅᨚᨔᨗ", arti: "Hujan" },
+        { latin: "Bulang", lontara: "ᨅᨘᨒ", arti: "Bulan" },
+        { latin: "Bura'ne", lontara: "ᨅᨘᨑᨊᨙ", arti: "Laki-laki / Suami" },
+        { latin: "Butta", lontara: "ᨅᨘᨈ", arti: "Tanah / Negeri" },
+        { latin: "Caddi", lontara: "ᨌᨉᨗ", arti: "Kecil" },
+        { latin: "Cara'de'", lontara: "ᨌᨑᨉᨙ", arti: "Pintar / Cerdas" },
+        { latin: "Carammeng", lontara: "ᨌᨑᨆᨙ", arti: "Cermin" },
+        { latin: "Cera'", lontara: "ᨌᨙᨑ", arti: "Darah" },
+        { latin: "Ce'la", lontara: "ᨌᨙᨒ", arti: "Garam" },
+        { latin: "Cicca'", lontara: "ᨌᨗᨌ", arti: "Cecak" },
+        { latin: "Cincing", lontara: "ᨌᨗᨌᨗ", arti: "Cincin" },
+        { latin: "Cini'", lontara: "ᨌᨗᨊᨗ", arti: "Lihat" },
+        { latin: "Cipuru'", lontara: "ᨌᨗᨄᨘᨑᨘ", arti: "Lapar" },
+        { latin: "Cokko", lontara: "ᨌᨚᨀᨚ", arti: "Sembunyi" },
+        { latin: "Co'mo'", lontara: "ᨌᨚᨆᨚ", arti: "Gemuk" },
+        { latin: "Dalle'", lontara: "ᨉᨒᨙ", arti: "Rezeki" },
+        { latin: "Dallekang", lontara: "ᨉᨒᨙᨀ", arti: "Depan" },
+        { latin: "Dare'", lontara: "ᨉᨑᨙ", arti: "Monyet / Kera" },
+        { latin: "Dato'-dato'", lontara: "ᨉᨈᨚᨉᨈᨚ", arti: "Boneka" },
+        { latin: "Didi", lontara: "ᨉᨗᨉᨗ", arti: "Merah" },
+        { latin: "Dinging", lontara: "ᨉᨗᨂᨗ", arti: "Dingin" },
+        { latin: "Doang", lontara: "ᨉᨚᨕ", arti: "Udang" },
+        { latin: "Doi'", lontara: "ᨉᨚᨕᨗ", arti: "Uang" },
+        { latin: "Dokkong", lontara: "ᨉᨚᨀᨚ", arti: "Kurus" },
+        { latin: "Dolanga", lontara: "ᨉᨚᨒᨁ", arti: "Lautan" },
+        { latin: "Ebara'", lontara: "ᨕᨙᨅᨑ", arti: "Misal / Contoh" },
+        { latin: "Eja", lontara: "ᨕᨙᨍ", arti: "Merah" },
+        { latin: "Epa", lontara: "ᨕᨙᨄ", arti: "Ketiak" },
+        { latin: "Erang", lontara: "ᨕᨙᨑ", arti: "Bawa" },
+        { latin: "Ero'", lontara: "ᨕᨙᨑᨚ", arti: "Mau / Ingin" },
+        { latin: "Ga'de", lontara: "ᨁᨉᨙ", arti: "Warung / Kedai" },
+        { latin: "Gammara'", lontara: "ᨁᨆᨑ", arti: "Bagus / Gagah / Cantik" },
+        { latin: "Ganna'", lontara: "ᨁᨊ", arti: "Cukup / Genap" },
+        { latin: "Garring", lontara: "ᨁᨑᨗ", arti: "Sakit" },
+        { latin: "Gassing", lontara: "ᨁᨔᨗ", arti: "Kuat / Sehat" },
+        { latin: "Gau'", lontara: "ᨁᨘ", arti: "Perilaku / Perbuatan" },
+        { latin: "Golla", lontara: "ᨁᨚᨒ", arti: "Gula" },
+        { latin: "Goncing", lontara: "ᨁᨚᨌᨗ", arti: "Gunting" },
+        { latin: "Gunturu'", lontara: "ᨁᨘᨈᨘᨑᨘ", arti: "Guntur / Petir" },
+        { latin: "Jakkala'", lontara: "ᨍᨀᨒ", arti: "Tangkap" },
+        { latin: "Jala", lontara: "ᨍᨒ", arti: "Jala ikan" },
+        { latin: "Jambang", lontara: "ᨍᨆ", arti: "Buang air besar / WC" },
+        { latin: "Jangang", lontara: "ᨍᨂ", arti: "Ayam" },
+        { latin: "Jangang-jangang", lontara: "ᨍᨂᨍᨂ", arti: "Burung" },
+        { latin: "Jappa", lontara: "ᨍᨄ", arti: "Jalan" },
+        { latin: "Jappo'", lontara: "ᨍᨄᨚ", arti: "Tua / Lapuk" },
+        { latin: "Jarang", lontara: "ᨍᨑ", arti: "Kuda" },
+        { latin: "Je'ne'", lontara: "ᨍᨙᨊᨙ", arti: "Air" },
+        { latin: "Juku'", lontara: "ᨍᨘᨀᨘ", arti: "Ikan" },
+        { latin: "Ka'bala'", lontara: "ᨀᨅᨒ", arti: "Kebal" },
+        { latin: "Kaca", lontara: "ᨀᨌ", arti: "Gelas / Kaca" },
+        { latin: "Kadera", lontara: "ᨀᨉᨙᨑ", arti: "Kursi" },
+        { latin: "Kaluku", lontara: "ᨀᨒᨘᨀᨘ", arti: "Kelapa" },
+        { latin: "Kalumanynyang", lontara: "ᨀᨒᨘᨆᨬ", arti: "Kaya harta" },
+        { latin: "Kallong", lontara: "ᨀᨒᨚ", arti: "Leher" },
+        { latin: "Kanre", lontara: "ᨀᨊᨛᨑᨙ", arti: "Makanan" },
+        { latin: "Kassi'", lontara: "ᨀᨔᨗ", arti: "Pasir" },
+        { latin: "Kiddi'", lontara: "ᨀᨗᨉᨗ", arti: "Sedikit" },
+        { latin: "Kongkong", lontara: "ᨀᨚᨀᨚ", arti: "Anjing" },
+        { latin: "Kuttu", lontara: "ᨀᨘᨈᨘ", arti: "Malas" },
+        { latin: "Labbu", lontara: "ᨒᨅᨘ", arti: "Panjang" },
+        { latin: "Lambusu'", lontara: "ᨒᨆᨘᨔᨘ", arti: "Lurus / Jujur" },
+        { latin: "Lamma", lontara: "ᨒᨆ", arti: "Lemah" },
+        { latin: "Lammoro'", lontara: "ᨒᨆᨚᨑᨚ", arti: "Murah" },
+        { latin: "Lampa", lontara: "ᨒᨄ", arti: "Pergi" },
+        { latin: "Leko'", lontara: "ᨒᨙᨀᨚ", arti: "Daun" },
+        { latin: "Lemo", lontara: "ᨒᨙᨆᨚ", arti: "Jeruk" },
+        { latin: "Lipa'", lontara: "ᨒᨗᨄ", arti: "Sarung" },
+        { latin: "Lompo", lontara: "ᨒᨚᨄᨚ", arti: "Besar" },
+        { latin: "Malla'", lontara: "ᨆᨒ", arti: "Takut" },
+        { latin: "Mangge", lontara: "ᨆᨁᨙ", arti: "Ayah / Bapak" },
+        { latin: "Mari", lontara: "ᨆᨑᨗ", arti: "Berhenti" },
+        { latin: "Masigik", lontara: "ᨆᨔᨗᨁᨗ", arti: "Masjid" },
+        { latin: "Mataallo", lontara: "ᨆᨈᨕᨒᨚ", arti: "Matahari" },
+        { latin: "Mate", lontara: "ᨆᨈᨙ", arti: "Mati" },
+        { latin: "Mempo", lontara: "ᨆᨙᨄᨚ", arti: "Duduk" },
+        { latin: "Menteng", lontara: "ᨆᨙᨈᨙ", arti: "Berdiri" },
+        { latin: "Miong", lontara: "ᨆᨗᨐᨚ", arti: "Kucing" },
+        { latin: "Ngaseng", lontara: "ᨂᨔᨙ", arti: "Semua" },
+        { latin: "Nipisi'", lontara: "ᨊᨗᨄᨗᨔᨗ", arti: "Tipis" },
+        { latin: "Nolo'", lontara: "ᨊᨚᨒᨚ", arti: "Nol" },
+        { latin: "Nyamannang", lontara: "ᨬᨆᨊ", arti: "Enak / Nyaman" },
+        { latin: "Olo'-olo'", lontara: "ᨕᨚᨒᨚᨕᨚᨒᨚ", arti: "Binatang / Hewan" },
+        { latin: "Ore", lontara: "ᨕᨚᨑᨙ", arti: "Senang / Gembira" },
+        { latin: "Otere'", lontara: "ᨕᨚᨈᨙᨑᨙ", arti: "Tali" },
+        { latin: "Pallu", lontara: "ᨄᨒᨘ", arti: "Masak" },
+        { latin: "Pau", lontara: "ᨄᨘ", arti: "Bicara / Kata" },
+        { latin: "Poko'", lontara: "ᨄᨚᨀᨚ", arti: "Pohon / Pokok" },
+        { latin: "Pue'", lontara: "ᨄᨘᨕᨙ", arti: "Belah" },
+        { latin: "Rannu", lontara: "ᨑᨊᨘ", arti: "Senang / Bahagia" },
+        { latin: "Rappo", lontara: "ᨑᨄᨚ", arti: "Buah" },
+        { latin: "Romang", lontara: "ᨑᨚᨆ", arti: "Hutan" },
+        { latin: "Ruku'", lontara: "ᨑᨘᨀᨘ", arti: "Rumput" },
+        { latin: "Sapi", lontara: "ᨔᨄᨗ", arti: "Sapi" },
+        { latin: "Sare", lontara: "ᨔᨑᨙ", arti: "Beri / Kasih" },
+        { latin: "Se're", lontara: "ᨔᨙᨑᨙ", arti: "Satu" },
+        { latin: "Sikede'", lontara: "ᨔᨗᨀᨙᨉᨙ", arti: "Sedikit" },
+        { latin: "Sikola", lontara: "ᨔᨗᨀᨚᨒ", arti: "Sekolah" },
+        { latin: "Tallasak", lontara: "ᨈᨒᨔ", arti: "Hidup" },
+        { latin: "Tamparang", lontara: "ᨈᨆᨑ", arti: "Laut" },
+        { latin: "Tangke", lontara: "ᨈᨀᨙ", arti: "Ranting" },
+        { latin: "Tau", lontara: "ᨈᨓᨘ", arti: "Manusia / Orang" },
+        { latin: "Tena", lontara: "ᨈᨙᨊ", arti: "Tidak ada" },
+        { latin: "Tinro", lontara: "ᨈᨗᨑᨚ", arti: "Tidur" },
+        { latin: "Uk", lontara: "ᨕᨘ", arti: "Rambut" },
+        { latin: "Ulara'", lontara: "ᨕᨘᨒᨑ", arti: "Ular" },
+        { latin: "Uli'", lontara: "ᨕᨘᨒᨗ", arti: "Kulit" },
+        { latin: "Ulu", lontara: "ᨕᨘᨒᨘ", arti: "Kepala" },
+        { latin: "Warani", lontara: "
