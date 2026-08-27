@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kamus Lontara V2</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;text-align:center;background:#fdfdfd;margin:0;padding:15px;color:#333}
+.container{max-width:700px;margin:auto;background:white;padding:20px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+h1{color:#b71c1c;font-size:20px}
+.tabs{display:flex;gap:6px;background:#fff5f5;padding:6px;border-radius:30px;margin:15px 0}
+.tab-btn{flex:1;padding:10px;border:none;border-radius:20px;cursor:pointer;font-weight:bold;color:#b71c1c;background:transparent;font-size:12px}
+.tab-btn.active{background:#b71c1c;color:white}
+.tab-content{display:none;text-align:left}
+.tab-content.active{display:block}
+input{width:100%;padding:12px;border:2px solid #ddd;border-radius:30px;box-sizing:border-box}
+.result-card{background:#fff5f5;border:1px solid #ffe0e0;padding:15px;border-radius:12px;margin:15px 0;text-align:center}
+.lontara-big{font-size:44px;color:#b71c1c;font-weight:bold}
+.btn{border:none;padding:7px 12px;border-radius:20px;font-size:12px;cursor:pointer;margin:3px}
+.btn-p{background:#b71c1c;color:white}.btn-s{background:white;border:1px solid #b71c1c;color:#b71c1c}
+.huruf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.huruf-card{border:1px solid #ffe0e0;border-radius:8px;padding:10px 3px;text-align:center}
+.huruf-lontara{font-size:22px;color:#b71c1c}.huruf-latin{font-weight:bold;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>ᨀᨆᨘ ᨒᨚᨈᨑ - V2</h1>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="openTab('kamus',this)">Kamus</button>
+<button class="tab-btn" onclick="openTab('dasar',this)">Dasar Huruf</button>
+<button class="tab-btn" onclick="openTab('toa',this)">Lontara Toa</button>
+</div>
+
+<div id="tab-kamus" class="tab-content active">
+<input id="searchInput" oninput="cariKata()" placeholder="Ketik: tabe, balla">
+<div id="resultCard" class="result-card" style="display:none">
+<div id="resLatin"></div><div id="resLontara" class="lontara-big"></div><div id="resArti"></div>
+<div><button class="btn btn-p" onclick="putar()">🔊 Dengar</button>
+<button class="btn btn-s" onclick="salin()">📋 Salin</button></div>
+</div>
+<div id="dictList"></div>
+</div>
+
+<div id="tab-dasar" class="tab-content">
+<p style="font-size:12px;background:#fdf6ec;padding:10px;border-radius:8px">23 huruf modern. Filosofi Sulapa Eppa Wala Suji: api-air-angin-tanah.</p>
+<div id="gridModern" class="huruf-grid"></div>
+</div>
+
+<div id="tab-toa" class="tab-content">
+<div style="background:#fff5f5;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;text-align:left">
+<b>👑 Pencipta: Daeng Pamatte</b><br>
+Lahir di Lakiung, Syahbandar Gowa era Karaeng Tumapakrisi Kallonna 1530-1547. Ciptakan 18 huruf asli Lontara Jangang-Jangang (jangang=burung) dari gerakan burung laut: Ka=melayang, Nga=mendarat. Dipakai di Perjanjian Bongaya. Versi Toa ini beda dengan Bilang-Bilang (angka Arab) dan Modern (Sulapa Eppa).
+</div>
+<div id="gridToa" class="huruf-grid" style="margin-top:10px"></div>
+</div>
+
+</div>
+<script>
+// EDIT DISINI - TAMBAH KATA BARU
+const kamusKata=[
+{latin:"tabe",lontara:"ᨈᨅᨙ",arti:"Permisi / Maaf"},
+{latin:"allo",lontara:"ᨕᨒᨚ",arti:"Hari"},
+{latin:"balla",lontara:"ᨅᨒ",arti:"Rumah"},
+{latin:"baji'",lontara:"ᨅᨍᨗ",arti:"Baik"},
+{latin:"aga",lontara:"ᨕᨁ",arti:"Apa"},
+{latin:"kareba",lontara:"ᨀᨑᨙᨅ",arti:"Kabar"},
+{latin:"rewako",lontara:"ᨑᨙᨓᨀᨚ",arti:"Semangat!"}
+];
+const hurufModern=[{l:"ᨀ",la:"Ka"},{l:"ᨁ",la:"Ga"},{l:"ᨂ",la:"Nga"},{l:"ᨃ",la:"Ngka"},{l:"ᨄ",la:"Pa"},{l:"ᨅ",la:"Ba"},{l:"ᨆ",la:"Ma"},{l:"ᨇ",la:"Mpa"},{l:"ᨈ",la:"Ta"},{l:"ᨉ",la:"Da"},{l:"ᨊ",la:"Na"},{l:"ᨋ",la:"Nra"},{l:"ᨌ",la:"Ca"},{l:"ᨍ",la:"Ja"},{l:"ᨎ",la:"Nya"},{l:"ᨏ",la:"Nca"},{l:"ᨐ",la:"Ya"},{l:"ᨑ",la:"Ra"},{l:"ᨒ",la:"La"},{l:"ᨓ",la:"Wa"},{l:"ᨔ",la:"Sa"},{l:"ᨕ",la:"A"},{l:"ᨖ",la:"Ha"}];
+const hurufToa=[{l:"ᨀ",la:"Ka",b:"Melayang"},{l:"ᨁ",la:"Ga",b:"Melayang rendah"},{l:"ᨂ",la:"Nga",b:"Mendarat"},{l:"ᨄ",la:"Pa",b:"Mengepak"},{l:"ᨅ",la:"Ba",b:"Bertengger"},{l:"ᨆ",la:"Ma",b:"Menukik"},{l:"ᨈ",la:"Ta",b:"Lurus"},{l:"ᨉ",la:"Da",b:"Belok"},{l:"ᨊ",la:"Na",b:"Meluncur"},{l:"ᨌ",la:"Ca",b:"Menyambar"},{l:"ᨍ",la:"Ja",b:"Miring"},{l:"ᨎ",la:"Nya",b:"Turun"},{l:"ᨐ",la:"Ya",b:"Naik"},{l:"ᨑ",la:"Ra",b:"Berputar"},{l:"ᨒ",la:"La",b:"Jauh"},{l:"ᨓ",la:"Wa",b:"Cepat"},{l:"ᨔ",la:"Sa",b:"Diam"},{l:"ᨕ",la:"A",b:"Sarang"}];
+let aktif="";
+function openTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active')}
+function tampilList(){let h="";kamusKata.forEach(k=>{h+=`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee"><span><b>${k.latin}</b> - ${k.arti}</span><span style="color:#b71c1c">${k.lontara}</span></div>`});document.getElementById('dictList').innerHTML=h}
+function tampilModern(){let h="";hurufModern.forEach(x=>{h+=`<div class="huruf-card" onclick="bicara('${x.la}')"><div class="huruf-lontara">${x.l}</div><div class="huruf-latin">${x.la}</div></div>`});document.getElementById('gridModern').innerHTML=h}
+function tampilToa(){let h="";hurufToa.forEach(x=>{h+=`<div class="huruf-card" onclick="bicara('${x.la}')"><div class="huruf-lontara">${x.l}</div><div class="huruf-latin">${x.la}</div><div style="font-size:9px">🐦${x.b}</div></div>`});document.getElementById('gridToa').innerHTML=h}
+function cariKata(){let i=document.getElementById('searchInput').value.toLowerCase().trim();let c=document.getElementById('resultCard');if(!i){c.style.display="none";return}let k=kamusKata.find(x=>x.latin.includes(i)||x.arti.toLowerCase().includes(i));if(k){document.getElementById('resLatin').innerText=k.latin;document.getElementById('resLontara').innerText=k.lontara;document.getElementById('resArti').innerText=k.arti;aktif=k.latin;c.style.display="block"}else{document.getElementById('resLatin').innerText=i;document.getElementById('resLontara').innerText="Belum ada";document.getElementById('resArti').innerText="Tambah di kamusKata";aktif=i;c.style.display="block"}}
+function putar(){let u=new SpeechSynthesisUtterance(aktif);u.lang="id-ID";speechSynthesis.speak(u)}
+function bicara(t){let u=new SpeechSynthesisUtterance(t);u.lang="id-ID";speechSynthesis.speak(u)}
+function salin(){navigator.clipboard.writeText(document.getElementById('resLontara').innerText);alert("Disalin!")}
+tampilList();tampilModern();tampilToa();
+</script>
+</body>
+</html>
