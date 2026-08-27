@@ -1,84 +1,251 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kamus Lontara V2</title>
-<style>
-body{font-family:'Segoe UI',sans-serif;text-align:center;background:#fdfdfd;margin:0;padding:15px;color:#333}
-.container{max-width:700px;margin:auto;background:white;padding:20px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
-h1{color:#b71c1c;font-size:20px}
-.tabs{display:flex;gap:6px;background:#fff5f5;padding:6px;border-radius:30px;margin:15px 0}
-.tab-btn{flex:1;padding:10px;border:none;border-radius:20px;cursor:pointer;font-weight:bold;color:#b71c1c;background:transparent;font-size:12px}
-.tab-btn.active{background:#b71c1c;color:white}
-.tab-content{display:none;text-align:left}
-.tab-content.active{display:block}
-input{width:100%;padding:12px;border:2px solid #ddd;border-radius:30px;box-sizing:border-box}
-.result-card{background:#fff5f5;border:1px solid #ffe0e0;padding:15px;border-radius:12px;margin:15px 0;text-align:center}
-.lontara-big{font-size:44px;color:#b71c1c;font-weight:bold}
-.btn{border:none;padding:7px 12px;border-radius:20px;font-size:12px;cursor:pointer;margin:3px}
-.btn-p{background:#b71c1c;color:white}.btn-s{background:white;border:1px solid #b71c1c;color:#b71c1c}
-.huruf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.huruf-card{border:1px solid #ffe0e0;border-radius:8px;padding:10px 3px;text-align:center}
-.huruf-lontara{font-size:22px;color:#b71c1c}.huruf-latin{font-weight:bold;font-size:12px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamus & Penerjemah Lontara Makassar Lengkap</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #fdfdfd; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { color: #b71c1c; margin-bottom: 5px; }
+        .subtitle { color: #777; font-size: 14px; margin-bottom: 20px; }
+        
+        .search-box { position: relative; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px 20px; font-size: 16px; border: 2px solid #ddd; border-radius: 30px; outline: none; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: #b71c1c; }
+
+        .result-card { background: #fff5f5; border: 1px solid #ffe0e0; padding: 20px; border-radius: 12px; margin-bottom: 25px; }
+        .lontara-big { font-size: 48px; color: #b71c1c; margin: 10px 0; font-weight: bold; }
+        .latin-big { font-size: 20px; font-weight: bold; color: #222; }
+        .arti-big { font-size: 16px; color: #555; margin-top: 5px; }
+        
+        .btn-audio { background: #b71c1c; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-audio:hover { background: #900c0c; }
+
+        .dictionary-list { text-align: left; margin-top: 20px; max-height: 600px; overflow-y: auto; padding-right: 5px; }
+        .dictionary-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .dictionary-item:last-child { border-bottom: none; }
+        .word-lontara { font-size: 22px; color: #b71c1c; }
+        .word-latin { font-weight: bold; }
+        .word-arti { color: #666; font-size: 14px; }
+    </style>
 </head>
 <body>
+
 <div class="container">
-<h1>ᨀᨆᨘ ᨒᨚᨈᨑ - V2</h1>
+    <h1>Kamus Lontara Makassar</h1>
+    <div class="subtitle">Cari kata Latin atau Makassar untuk melihat Aksara Lontara & Suaranya</div>
 
-<div class="tabs">
-<button class="tab-btn active" onclick="openTab('kamus',this)">Kamus</button>
-<button class="tab-btn" onclick="openTab('dasar',this)">Dasar Huruf</button>
-<button class="tab-btn" onclick="openTab('toa',this)">Lontara Toa</button>
-</div>
+    <div class="search-box">
+        <input type="text" id="searchInput" oninput="cariKata()" placeholder="Ketik kata... (contoh: tabe, aga kareba, je'ne' uring)">
+    </div>
 
-<div id="tab-kamus" class="tab-content active">
-<input id="searchInput" oninput="cariKata()" placeholder="Ketik: tabe, balla">
-<div id="resultCard" class="result-card" style="display:none">
-<div id="resLatin"></div><div id="resLontara" class="lontara-big"></div><div id="resArti"></div>
-<div><button class="btn btn-p" onclick="putar()">🔊 Dengar</button>
-<button class="btn btn-s" onclick="salin()">📋 Salin</button></div>
-</div>
-<div id="dictList"></div>
-</div>
+    <div class="result-card" id="resultCard" style="display:none;">
+        <div class="latin-big" id="resLatin">-</div>
+        <div class="lontara-big" id="resLontara">-</div>
+        <div class="arti-big" id="resArti">-</div>
+        <button class="btn-audio" onclick="putarSuara()">🔊 Dengar Suara</button>
+    </div>
 
-<div id="tab-dasar" class="tab-content">
-<p style="font-size:12px;background:#fdf6ec;padding:10px;border-radius:8px">23 huruf modern. Filosofi Sulapa Eppa Wala Suji: api-air-angin-tanah.</p>
-<div id="gridModern" class="huruf-grid"></div>
+    <h3>Daftar Kosakata Lengkap</h3>
+    <div class="dictionary-list" id="dictList"></div>
 </div>
 
-<div id="tab-toa" class="tab-content">
-<div style="background:#fff5f5;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;text-align:left">
-<b>👑 Pencipta: Daeng Pamatte</b><br>
-Lahir di Lakiung, Syahbandar Gowa era Karaeng Tumapakrisi Kallonna 1530-1547. Ciptakan 18 huruf asli Lontara Jangang-Jangang (jangang=burung) dari gerakan burung laut: Ka=melayang, Nga=mendarat. Dipakai di Perjanjian Bongaya. Versi Toa ini beda dengan Bilang-Bilang (angka Arab) dan Modern (Sulapa Eppa).
-</div>
-<div id="gridToa" class="huruf-grid" style="margin-top:10px"></div>
-</div>
-
-</div>
 <script>
-// EDIT DISINI - TAMBAH KATA BARU
-const kamusKata=[
-{latin:"tabe",lontara:"ᨈᨅᨙ",arti:"Permisi / Maaf"},
-{latin:"allo",lontara:"ᨕᨒᨚ",arti:"Hari"},
-{latin:"balla",lontara:"ᨅᨒ",arti:"Rumah"},
-{latin:"baji'",lontara:"ᨅᨍᨗ",arti:"Baik"},
-{latin:"aga",lontara:"ᨕᨁ",arti:"Apa"},
-{latin:"kareba",lontara:"ᨀᨑᨙᨅ",arti:"Kabar"},
-{latin:"rewako",lontara:"ᨑᨙᨓᨀᨚ",arti:"Semangat!"}
-];
-const hurufModern=[{l:"ᨀ",la:"Ka"},{l:"ᨁ",la:"Ga"},{l:"ᨂ",la:"Nga"},{l:"ᨃ",la:"Ngka"},{l:"ᨄ",la:"Pa"},{l:"ᨅ",la:"Ba"},{l:"ᨆ",la:"Ma"},{l:"ᨇ",la:"Mpa"},{l:"ᨈ",la:"Ta"},{l:"ᨉ",la:"Da"},{l:"ᨊ",la:"Na"},{l:"ᨋ",la:"Nra"},{l:"ᨌ",la:"Ca"},{l:"ᨍ",la:"Ja"},{l:"ᨎ",la:"Nya"},{l:"ᨏ",la:"Nca"},{l:"ᨐ",la:"Ya"},{l:"ᨑ",la:"Ra"},{l:"ᨒ",la:"La"},{l:"ᨓ",la:"Wa"},{l:"ᨔ",la:"Sa"},{l:"ᨕ",la:"A"},{l:"ᨖ",la:"Ha"}];
-const hurufToa=[{l:"ᨀ",la:"Ka",b:"Melayang"},{l:"ᨁ",la:"Ga",b:"Melayang rendah"},{l:"ᨂ",la:"Nga",b:"Mendarat"},{l:"ᨄ",la:"Pa",b:"Mengepak"},{l:"ᨅ",la:"Ba",b:"Bertengger"},{l:"ᨆ",la:"Ma",b:"Menukik"},{l:"ᨈ",la:"Ta",b:"Lurus"},{l:"ᨉ",la:"Da",b:"Belok"},{l:"ᨊ",la:"Na",b:"Meluncur"},{l:"ᨌ",la:"Ca",b:"Menyambar"},{l:"ᨍ",la:"Ja",b:"Miring"},{l:"ᨎ",la:"Nya",b:"Turun"},{l:"ᨐ",la:"Ya",b:"Naik"},{l:"ᨑ",la:"Ra",b:"Berputar"},{l:"ᨒ",la:"La",b:"Jauh"},{l:"ᨓ",la:"Wa",b:"Cepat"},{l:"ᨔ",la:"Sa",b:"Diam"},{l:"ᨕ",la:"A",b:"Sarang"}];
-let aktif="";
-function openTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active')}
-function tampilList(){let h="";kamusKata.forEach(k=>{h+=`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee"><span><b>${k.latin}</b> - ${k.arti}</span><span style="color:#b71c1c">${k.lontara}</span></div>`});document.getElementById('dictList').innerHTML=h}
-function tampilModern(){let h="";hurufModern.forEach(x=>{h+=`<div class="huruf-card" onclick="bicara('${x.la}')"><div class="huruf-lontara">${x.l}</div><div class="huruf-latin">${x.la}</div></div>`});document.getElementById('gridModern').innerHTML=h}
-function tampilToa(){let h="";hurufToa.forEach(x=>{h+=`<div class="huruf-card" onclick="bicara('${x.la}')"><div class="huruf-lontara">${x.l}</div><div class="huruf-latin">${x.la}</div><div style="font-size:9px">🐦${x.b}</div></div>`});document.getElementById('gridToa').innerHTML=h}
-function cariKata(){let i=document.getElementById('searchInput').value.toLowerCase().trim();let c=document.getElementById('resultCard');if(!i){c.style.display="none";return}let k=kamusKata.find(x=>x.latin.includes(i)||x.arti.toLowerCase().includes(i));if(k){document.getElementById('resLatin').innerText=k.latin;document.getElementById('resLontara').innerText=k.lontara;document.getElementById('resArti').innerText=k.arti;aktif=k.latin;c.style.display="block"}else{document.getElementById('resLatin').innerText=i;document.getElementById('resLontara').innerText="Belum ada";document.getElementById('resArti').innerText="Tambah di kamusKata";aktif=i;c.style.display="block"}}
-function putar(){let u=new SpeechSynthesisUtterance(aktif);u.lang="id-ID";speechSynthesis.speak(u)}
-function bicara(t){let u=new SpeechSynthesisUtterance(t);u.lang="id-ID";speechSynthesis.speak(u)}
-function salin(){navigator.clipboard.writeText(document.getElementById('resLontara').innerText);alert("Disalin!")}
-tampilList();tampilModern();tampilToa();
+    const kamusKata = [
+        // Vokal Dasar A, I, U, E, O
+        { latin: "a", lontara: "ᨕ", arti: "Huruf / Vokal A" },
+        { latin: "i", lontara: "ᨕᨗ", arti: "Huruf / Vokal I" },
+        { latin: "u", lontara: "ᨕᨘ", arti: "Huruf / Vokal U" },
+        { latin: "e", lontara: "ᨕᨙ", arti: "Huruf / Vokal E" },
+        { latin: "o", lontara: "ᨕᨚ", arti: "Huruf / Vokal O" },
+
+        // Kosakata Versi Awal (Populer & Ungkapan)
+        { latin: "tabe", lontara: "ᨈᨅᨙ", arti: "Permisi / Maaf" },
+        { latin: "aga", lontara: "ᨕᨁ", arti: "Apa" },
+        { latin: "kareba", lontara: "ᨀᨑᨙᨅ", arti: "Kabar" },
+        { latin: "aga kareba", lontara: "ᨕᨁ ᨀᨑᨙᨅ", arti: "Apa kabar?" },
+        { latin: "rewako", lontara: "ᨑᨙᨓᨀᨚ", arti: "Berani / Semangat" },
+        { latin: "tarima kasih", lontara: "ᨈᨑᨗᨀ ᨀᨔᨗ", arti: "Terima kasih" },
+        { latin: "teai", lontara: "ᨈᨙᨕᨕᨗ", arti: "Bukan" },
+        { latin: "battala", lontara: "ᨅᨈᨒ", arti: "Berat" },
+        { latin: "katte", lontara: "ᨀᨈᨙ", arti: "Anda / Kamu (Sopan)" },
+        { latin: "manningo", lontara: "ᨀᨊᨗᨂᨚ", arti: "Bermain" },
+        { latin: "salama", lontara: "ᨔᨒᨀ", arti: "Selamat / Damai" },
+
+        // Kosakata Huruf A (Versi Baru)
+        { latin: "allo", lontara: "ᨕᨒᨚ", arti: "Hari" },
+        { latin: "anne", lontara: "ᨕᨊᨙ", arti: "Ini" },
+        { latin: "anjo", lontara: "ᨕᨍᨚ", arti: "Itu" },
+        { latin: "alle", lontara: "ᨕᨒᨙ", arti: "Ambil" },
+        { latin: "antama", lontara: "ᨕᨈᨀ", arti: "Masuk" },
+        { latin: "a'lampa", lontara: "ᨕᨒᨄ", arti: "Pergi" },
+        { latin: "ammak", lontara: "ᨕᨀ", arti: "Ibu" },
+        { latin: "appak", lontara: "ᨕᨄ", arti: "Bapak" },
+        { latin: "ampung", lontara: "ᨕᨄᨘ", arti: "Maaf" },
+        { latin: "ambani", lontara: "ᨕᨅᨊᨗ", arti: "Dekat" },
+        { latin: "alusu'", lontara: "ᨕᨒᨘᨔᨘ", arti: "Halus" },
+        { latin: "angngapa?", lontara: "ᨕᨂᨄ", arti: "Kenapa?" },
+        { latin: "ajjappa", lontara: "ᨕᨍᨄ", arti: "Berjalan" },
+        { latin: "aggalung", lontara: "ᨕᨁᨒᨘ", arti: "Bersawah" },
+
+        // Kosakata Huruf B
+        { latin: "baji'", lontara: "ᨅᨍᨗ", arti: "Baik" },
+        { latin: "baji-baji ji", lontara: "ᨅᨍᨗ ᨅᨍᨗ ᨍᨗ", arti: "Baik-baik saja" },
+        { latin: "baine", lontara: "ᨅᨕᨗᨊᨙ", arti: "Perempuan/Istri" },
+        { latin: "bura'ne", lontara: "ᨅᨘᨑᨊᨙ", arti: "Laki-laki/Suami" },
+        { latin: "balla", lontara: "ᨅᨒ", arti: "Rumah" },
+        { latin: "bangkeng", lontara: "ᨅᨀᨙ", arti: "Kaki" },
+        { latin: "bawa", lontara: "ᨅᨓ", arti: "Mulut" },
+        { latin: "bayao", lontara: "ᨅᨉᨚ", arti: "Telur" },
+        { latin: "biseang", lontara: "ᨅᨗᨔᨙᨕ", arti: "Perahu" },
+        { latin: "binanga", lontara: "ᨅᨗᨊᨁ", arti: "Sungai" },
+        { latin: "battu", lontara: "ᨅᨈᨘ", arti: "Datang" },
+        { latin: "bodo", lontara: "ᨅᨚ᨞ᨚ", arti: "Pendek" },
+        { latin: "bella", lontara: "ᨅᨙᨒ", arti: "Jauh" },
+
+        // Kosakata Huruf C
+        { latin: "caddi", lontara: "ᨒᨉᨗ", arti: "Kecil" },
+        { latin: "cera'", lontara: "ᨒᨙᨑ", arti: "Darah" },
+        { latin: "cipuru'", lontara: "ᨒᨗᨄᨘᨑᨘ", arti: "Lapar" },
+        { latin: "cini'", lontara: "ᨒᨗᨊᨗ", arti: "Dingin" },
+        { latin: "camme", lontara: "ᨒᨀᨙ", arti: "Cabai" },
+        { latin: "cappa", lontara: "ᨒᨄ", arti: "Ujung" },
+        { latin: "cidong", lontara: "ᨒᨗᨉᨚ", arti: "Duduk" },
+        { latin: "cangkudi", lontara: "ᨒᨀᨘᨉᨗ", arti: "Sendok" },
+
+        // Kosakata Huruf D
+        { latin: "deng", lontara: "ᨉᨙ", arti: "Dengan" },
+        { latin: "dalle'", lontara: "ᨉᨒᨙ", arti: "Rezeki" },
+        { latin: "doa", lontara: "ᨉᨚᨕ", arti: "Doa" },
+        { latin: "duppa", lontara: "ᨉᨘᨄ", arti: "Bertemu" },
+        { latin: "dongo'", lontara: "ᨉᨚᨂᨚ", arti: "Bodoh" },
+        { latin: "doti", lontara: "ᨉᨚᨈᨗ", arti: "Santet" },
+
+        // Kosakata Huruf E
+        { latin: "ero'", lontara: "ᨕᨙᨑᨚ", arti: "Mau/Ingin" },
+        { latin: "engka", lontara: "ᨕᨙᨀ", arti: "Ada" },
+        { latin: "eja", lontara: "ᨕᨙᨍ", arti: "Air" },
+        { latin: "elok", lontara: "ᨕᨙᨒᨚ", arti: "Bagus" },
+        { latin: "eppo", lontara: "ᨕᨙᨄᨚ", arti: "Naik" },
+        { latin: "erang", lontara: "ᨕᨙᨑ", arti: "Merah" },
+        { latin: "eppang", lontara: "ᨕᨙᨄ", arti: "Terbang" },
+
+        // Kosakata Huruf F
+        { latin: "fajar", lontara: "ᨄᨍᨑ", arti: "Fajar" },
+        { latin: "foto", lontara: "ᨄᨚᨈᨚ", arti: "Foto" },
+        { latin: "fulus", lontara: "ᨄᨘᨒᨘᨔᨘ", arti: "Uang" },
+        { latin: "fitnah", lontara: "ᨄᨗᨈᨛᨊ", arti: "Fitnah" },
+        { latin: "fakir", lontara: "ᨄᨀᨗᨑ", arti: "Orang miskin" },
+
+        // Kosakata Huruf G
+        { latin: "gaukang", lontara: "ᨁᨕᨘᨀ", arti: "Perbuatan" },
+        { latin: "golla", lontara: "ᨁᨚᨒ", arti: "Gula merah" },
+        { latin: "garring", lontara: "ᨁᨑᨗ", arti: "Kering" },
+        { latin: "gau'", lontara: "ᨁᨕᨘ", arti: "Kerja" },
+        { latin: "gunturu", lontara: "ᨁᨘᨈᨘᨑᨘ", arti: "Petir" },
+        { latin: "guntung", lontara: "ᨁᨘᨈᨘ", arti: "Gunung" },
+        { latin: "gassing", lontara: "ᨁᨔᨗ", arti: "Gasing" },
+
+        // Kosakata Huruf H
+        { latin: "haderek", lontara: "ᨖᨉᨙᨑᨙ", arti: "Hadir" },
+        { latin: "hallalak", lontara: "ᨖᨒᨒ", arti: "Halal" },
+        { latin: "harang", lontara: "ᨖᨑ", arti: "Haram" },
+        { latin: "hakji", lontara: "ᨖᨍᨗ", arti: "Haji" },
+        { latin: "halamang", lontara: "ᨖᨒᨀ", arti: "Halaman" },
+        { latin: "hujang", lontara: "ᨖᨘᨍ", arti: "Hujan" },
+        { latin: "hallu'", lontara: "ᨖᨒᨘ", arti: "Turun" },
+        { latin: "happa", lontara: "ᨖᨄ", arti: "Napas" },
+
+        // Kosakata Huruf I
+        { latin: "inakke", lontara: "ᨕᨗᨊᨀᨙ", arti: "Saya" },
+        { latin: "ikau", lontara: "ᨕᨗᨀᨕᨘ", arti: "Kamu" },
+        { latin: "ia/io", lontara: "ᨕᨗᨕ", arti: "Dia" },
+        { latin: "iek", lontara: "ᨕᨗᨕᨙ", arti: "Ya" },
+        { latin: "isseng", lontara: "ᨕᨗᨔᨙ", arti: "Tahu" },
+        { latin: "ingak", lontara: "ᨕᨗᨂ", arti: "Ingat" },
+        { latin: "inung", lontara: "ᨕᨗᨊᨘ", arti: "Minum" },
+        { latin: "inrang", lontara: "ᨕᨗᨑ", arti: "Utang" },
+        { latin: "ilorok", lontara: "ᨕᨗᨒᨚᨑᨚ", arti: "Air liur" },
+
+        // Kosakata Huruf J
+        { latin: "jai", lontara: "ᨍᨕᨗ", arti: "Banyak" },
+        { latin: "jabe", lontara: "ᨍᨅᨙ", arti: "Manja" },
+        { latin: "jangang", lontara: "ᨍᨁ", arti: "Ayam" },
+        { latin: "jarang", lontara: "ᨍᨑ", arti: "Kuda" },
+        { latin: "jangka", lontara: "ᨍᨀ", arti: "Sisir" },
+        { latin: "jannang", lontara: "ᨍᨊ", arti: "Nyenyak" },
+        { latin: "jappok", lontara: "ᨍᨄᨚ", arti: "Busuk" },
+        { latin: "jambatang", lontara: "ᨍᨅᨈ", arti: "Jembatan" },
+        { latin: "jarra", lontara: "ᨍᨑ", arti: "Jera" },
+        { latin: "je'ne'", lontara: "ᨍᨙᨊᨙ", arti: "Air" },
+        { latin: "je'ne' uring", lontara: "ᨍᨙᨊᨙ ᨕᨘᨑᨗ", arti: "Air jelatah / Air rebusan periuk" },
+
+        // Kosakata Tambahan U
+        { latin: "uring", lontara: "ᨕᨘᨑᨗ", arti: "Periuk / Kuali" },
+        { latin: "ungti", lontara: "ᨕᨘᨈᨗ", arti: "Pisang" },
+        { latin: "uli", lontara: "ᨕᨘᨒᨗ", arti: "Kulit" },
+        { latin: "ule", lontara: "ᨕᨘᨒᨙ", arti: "Ular" },
+        { latin: "urang", lontara: "ᨕᨘᨑ", arti: "Udang" }
+    ];
+
+    let kataAktif = "";
+
+    function tampilkanDaftar() {
+        const listContainer = document.getElementById('dictList');
+        listContainer.innerHTML = '';
+        kamusKata.forEach(item => {
+            listContainer.innerHTML += `
+                <div class="dictionary-item">
+                    <div>
+                        <span class="word-latin">${item.latin}</span> - <span class="word-arti">${item.arti}</span>
+                    </div>
+                    <div class="word-lontara">${item.lontara}</div>
+                </div>
+            `;
+        });
+    }
+
+    function cariKata() {
+        const input = document.getElementById('searchInput').value.toLowerCase().trim();
+        const resultCard = document.getElementById('resultCard');
+
+        if (input === "") {
+            resultCard.style.display = "none";
+            return;
+        }
+
+        const hasil = kamusKata.find(item => 
+            item.latin.toLowerCase() === input || 
+            item.latin.toLowerCase().includes(input) || 
+            item.arti.toLowerCase().includes(input)
+        );
+
+        if (hasil) {
+            document.getElementById('resLatin').innerText = hasil.latin;
+            document.getElementById('resLontara').innerText = hasil.lontara;
+            document.getElementById('resArti').innerText = hasil.arti;
+            kataAktif = hasil.latin;
+            resultCard.style.display = "block";
+        } else {
+            document.getElementById('resLatin').innerText = input;
+            document.getElementById('resLontara').innerText = "ᨈᨙᨊ";
+            document.getElementById('resArti').innerText = "Kata tidak ditemukan di kamus";
+            kataAktif = input;
+            resultCard.style.display = "block";
+        }
+    }
+
+    function putarSuara() {
+        if (!kataAktif) return;
+        const speech = new SpeechSynthesisUtterance(kataAktif);
+        speech.lang = 'id-ID';
+        speech.rate = 0.9;
+        window.speechSynthesis.speak(speech);
+    }
+
+    tampilkanDaftar();
 </script>
+
 </body>
 </html>
