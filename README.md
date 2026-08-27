@@ -1,0 +1,2 @@
+# Ganna81-KAMUS-LENGKAP-LONTARA-V3-08-2026-new
+index.html
